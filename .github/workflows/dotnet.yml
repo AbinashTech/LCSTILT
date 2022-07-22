@@ -1,35 +1,21 @@
+name: ".NET Framework Desktop"
 
-
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-    
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  solution: 'pcsw-cusp-tilt-switch/cp_tiltswitch_hidromas/Tilt_Switch_System.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: [windows-latest]
+    runs-on: windows-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-     
-      - name: setup-msbuild
-        uses: microsoft/setup-msbuild@v1
-        
-      - name: Setup NuGet.exe for use with actions
-        uses: NuGet/setup-nuget@v1.0.5 
-        
-      - name: Build the solution
-        run : msbuild pcsw-cusp-tilt-switch/cp_tiltswitch_hidromas/Tilt_Switch_System.sln
-       
-
-   
+    - uses: actions/checkout@v2
+    - uses: nuget/setup-nuget@v1    
+    - run: nuget restore '${{ env.solution }}'
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+    - run: msbuild '${{ env.solution }}' /p:Configuration='${{ env.buildConfiguration }}' /p:platform='${{ env.buildPlatform }}'
